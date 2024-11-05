@@ -1,5 +1,15 @@
-// Array para armazenar os produtos
 let estoque = [];
+
+// Função para buscar todos os produtos do banco de dados e atualizar a tabela
+async function buscarProdutos() {
+    try {
+        const response = await fetch('http://localhost:3000/api/produtos');
+        estoque = await response.json();
+        atualizarTabela();
+    } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+    }
+}
 
 // Função para atualizar a tabela com os produtos no estoque
 function atualizarTabela() {
@@ -25,62 +35,66 @@ function atualizarTabela() {
     });
 }
 
-// Função para adicionar um produto ao estoque
-function adicionarProduto() {
+// Função para adicionar um produto ao banco de dados
+async function adicionarProduto() {
     const nome = document.getElementById("nome").value;
     const quantidade = parseInt(document.getElementById("quantidade").value);
     const tipo = document.getElementById("tipo").value;
 
     if (nome && quantidade > 0 && tipo) {
-        // Verifica se o produto já existe no estoque
-        const produtoExistente = estoque.find(produto => produto.nome === nome);
-
-        if (produtoExistente) {
-            // Atualiza a quantidade do produto existente
-            produtoExistente.quantidade += quantidade;
-        } else {
-            // Adiciona um novo produto ao estoque
-            estoque.push({ nome, quantidade, tipo });
+        try {
+            const response = await fetch('http://localhost:3000/api/produto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, quantidade, tipo })
+            });
+            if (response.ok) {
+                await buscarProdutos(); // Atualiza a tabela após adicionar o produto
+                document.getElementById("nome").value = "";
+                document.getElementById("quantidade").value = "";
+                document.getElementById("tipo").value = "";
+            } else {
+                alert("Erro ao adicionar produto.");
+            }
+        } catch (error) {
+            console.error("Erro ao adicionar produto:", error);
         }
-
-        // Limpa os campos de entrada
-        document.getElementById("nome").value = "";
-        document.getElementById("quantidade").value = "";
-        document.getElementById("tipo").value = "";
-
-        atualizarTabela();
     } else {
         alert("Por favor, preencha todos os campos corretamente.");
     }
 }
 
-// Função para retirar uma quantidade de um produto do estoque
-function retirarProduto() {
+// Função para retirar uma quantidade de um produto do banco de dados
+async function retirarProduto() {
     const nome = document.getElementById("retirarNome").value;
     const quantidade = parseInt(document.getElementById("retirarQuantidade").value);
 
     if (nome && quantidade > 0) {
         const produto = estoque.find(produto => produto.nome === nome);
-
         if (produto) {
             if (produto.quantidade >= quantidade) {
-                // Reduz a quantidade do produto
-                produto.quantidade -= quantidade;
-
-                // Remove o produto do estoque se a quantidade chegar a zero
-                if (produto.quantidade === 0) {
-                    estoque = estoque.filter(prod => prod.nome !== nome);
+                const novaQuantidade = produto.quantidade - quantidade;
+                try {
+                    const response = await fetch(`http://localhost:3000/api/produto/${produto.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ quantidade: novaQuantidade })
+                    });
+                    if (response.ok) {
+                        await buscarProdutos(); // Atualiza a tabela após atualizar o produto
+                    } else {
+                        alert("Erro ao atualizar produto.");
+                    }
+                } catch (error) {
+                    console.error("Erro ao atualizar produto:", error);
                 }
             } else {
                 alert("Quantidade insuficiente no estoque.");
             }
-
-            atualizarTabela();
         } else {
             alert("Produto não encontrado no estoque.");
         }
 
-        // Limpa os campos de entrada
         document.getElementById("retirarNome").value = "";
         document.getElementById("retirarQuantidade").value = "";
     } else {
@@ -88,5 +102,5 @@ function retirarProduto() {
     }
 }
 
-// Atualiza a tabela inicialmente
-atualizarTabela();
+// Carregar os produtos ao carregar a página
+buscarProdutos();

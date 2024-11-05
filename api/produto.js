@@ -52,6 +52,10 @@ app.put('/api/produto/:id', (req, res) => {
         res.json({ changes: this.changes });
     });
 });
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
 
 // Exporta o servidor como uma função serverless
 module.exports = app;

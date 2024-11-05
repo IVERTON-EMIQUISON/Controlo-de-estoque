@@ -28,8 +28,19 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
-        button{
-            background-color: rgb(83, 240, 83);
+        button {
+            background-color: rgb(83, 240, 83); /* Verde para adicionar produto */
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: rgb(70, 200, 70); /* Sombra para botão de adicionar */
+        }
+        .retirar-btn {
+            background-color: rgb(240, 83, 83); /* Vermelho para retirar produto */
+            cursor: pointer;
+        }
+        .retirar-btn:hover {
+            background-color: rgb(200, 70, 70); /* Sombra para botão de retirada */
         }
         table {
             width: 100%;
@@ -43,7 +54,6 @@
         }
         .lista-produtos-container {
             max-height: 200px; 
-            height:199px;
             overflow-y: scroll; 
             width: 100%;
         }
@@ -62,23 +72,22 @@
         <h3>Retirar Produto</h3>
         <input type="text" id="retirarNome" placeholder="Nome do Produto">
         <input type="number" id="retirarQuantidade" placeholder="Quantidade a Retirar">
-        <button onclick="retirarProduto()">Retirar Produto</button>
+        <button class="retirar-btn" onclick="retirarProduto()">Retirar Produto</button>
        
         <div class="lista-produtos-container">
-        <h3>Estoque Atual</h3>
-        <table>
-           
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Quantidade</th>
-                    <th>Tipo</th>
-                </tr>
-            </thead>
-            <tbody id="estoqueTabela">
-                <!-- Produtos serão inseridos aqui -->
-            </tbody>
-        </table> 
+            <h3>Estoque Atual</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody id="estoqueTabela">
+                    <!-- Produtos serão inseridos aqui pelo JavaScript -->
+                </tbody>
+            </table> 
         </div>
     </div>
    
